@@ -16,12 +16,13 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
+    private final UserMapper userMapper;
 
     @Override
     public UserDto createUser(UserDto userDto) {
         checkForEmailDuplicate(userDto);
-        User newUser = UserMapper.dtoToUser(userDto);
-        return UserMapper.toUserDto(repository.createUser(newUser));
+        User newUser = userMapper.dtoToUser(userDto);
+        return userMapper.toUserDto(repository.createUser(newUser));
     }
 
     @Override
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserService {
                     "Отсутствует пользователь с id: " + id);
         }
         checkForEmailDuplicate(userDto);
-        User newUser = UserMapper.dtoToUser(userDto);
+        User newUser = userMapper.dtoToUser(userDto);
         User userForUpdate = repository.getUserById(id);
         if (newUser.getName() != null) {
             userForUpdate.setName(newUser.getName());
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
         if (newUser.getEmail() != null) {
             userForUpdate.setEmail(newUser.getEmail());
         }
-        return UserMapper.toUserDto(repository.updateUser(userForUpdate));
+        return userMapper.toUserDto(repository.updateUser(userForUpdate));
     }
 
     @Override
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Отсутствует пользователь с id: " + id);
         }
-        return UserMapper.toUserDto(repository.getUserById(id));
+        return userMapper.toUserDto(repository.getUserById(id));
     }
 
     @Override
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
         List<User> repositoryUsers = repository.getAllUsers();
         List<UserDto> refinedUsers = new ArrayList<>();
         for (User repositoryUser : repositoryUsers) {
-            refinedUsers.add(UserMapper.toUserDto(repositoryUser));
+            refinedUsers.add(userMapper.toUserDto(repositoryUser));
         }
         return refinedUsers;
     }
